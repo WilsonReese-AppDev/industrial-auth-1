@@ -1,5 +1,6 @@
 class LikesController < ApplicationController
   before_action :set_like, only: %i[ show edit update destroy ]
+  before_action :ensure_current_user_is_fan, only: %i[ edit update destroy ]
 
   # GET /likes or /likes.json
   def index
@@ -60,6 +61,12 @@ class LikesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_like
       @like = Like.find(params[:id])
+    end
+    
+    def ensure_current_user_is_fan
+      if current_user != @like.fan
+        redirect_back fallback_location: root_url, alert: "Unable to perform action."
+      end
     end
 
     # Only allow a list of trusted parameters through.
