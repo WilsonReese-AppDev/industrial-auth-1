@@ -1,5 +1,6 @@
 class FollowRequestsController < ApplicationController
   before_action :set_follow_request, only: %i[ show edit update destroy ]
+  before_action :ensure_current_user_is_sender_or_recipient, only: %i[ edit update destroy ]
 
   # GET /follow_requests or /follow_requests.json
   def index
@@ -61,6 +62,12 @@ class FollowRequestsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_follow_request
       @follow_request = FollowRequest.find(params[:id])
+    end
+
+    def ensure_current_user_is_sender_or_recipient
+      if current_user != @follow_request.sender && current_user != @follow_request.recipient
+        redirect_back fallback_location: root_url, alert: "Must be the sender of recipient of this follow request."
+      end
     end
 
     # Only allow a list of trusted parameters through.
