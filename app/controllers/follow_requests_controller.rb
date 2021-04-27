@@ -1,6 +1,7 @@
 class FollowRequestsController < ApplicationController
   before_action :set_follow_request, only: %i[ show edit update destroy ]
   before_action :ensure_current_user_is_sender_or_recipient, only: %i[ edit update destroy ]
+  # before_action :ensure_current_user_is_recipient_of_pending, only: %i[ show ]
 
   # GET /follow_requests or /follow_requests.json
   def index
@@ -69,6 +70,12 @@ class FollowRequestsController < ApplicationController
         redirect_back fallback_location: root_url, alert: "Must be the sender of recipient of this follow request."
       end
     end
+
+    # def ensure_current_user_is_recipient_of_pending
+    #   if current_user != @follow_request.recipient && @follow_request.status == :pending
+    #     redirect_back fallback_location: root_url, alert: "Must be the recipient of this follow request."
+    #   end
+    # end
 
     # Only allow a list of trusted parameters through.
     def follow_request_params
